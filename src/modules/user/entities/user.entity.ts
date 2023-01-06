@@ -11,7 +11,8 @@ export class User {
     @Column({
         name: "first_name",
         length: 30,
-        type: "varchar"
+        type: "varchar",
+        nullable: true
     })
     firstName: string
 
@@ -19,14 +20,16 @@ export class User {
     @Column({
         name: "last_name",
         length: 30,
-        type: "varchar"
+        type: "varchar",
+        nullable: false
     })
     lastName: string
 
     @Column({
         name: "user_name",
         length: 30,
-        type: "varchar"
+        type: "varchar",
+        nullable: false
     })
     userName: string
 
@@ -38,11 +41,7 @@ export class User {
     email: string
 
     @Column({
-        name: "password",
-        length: 30,
-        type: "varchar"
+        name: "password"
     })
     password: string
-  length: any;
-
 }

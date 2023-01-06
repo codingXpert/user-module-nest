@@ -1,30 +1,81 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UserService } from "./user.service";
-import { User } from "./entities/user.entity";
 import { randomBytes, scrypt as _scrypt } from "crypto";
 import { promisify } from "util";
 
-const scrypt = promisify(_scrypt);
+
+// const scrypt = promisify(_scrypt);
+
+// @Injectable()
+// export class AuthService{
+//     constructor(private userService: UserService){}
+
+//     async signup(email:string , password:string):Promise<CreateUserDto>{
+//             const users = await this.userService.find(email);
+//             if(users.length){
+//                 throw new BadRequestException('email in use')
+//             }
+
+//             const salt = randomBytes(8).toString('hex');
+
+//             const hash = (await scrypt(password, salt ,32)) as Buffer;
+
+//             const result = salt + '.' + hash.toString('hex');
+
+//             const user = this.userService.create(email , result);
+
+//             return user
+//     }
+
+//     async signin(email:string , password:string){
+//         const [user] = await this.userService.find(email)
+//         if(!user){
+//             throw new NotFoundException('user not found')
+//         }
+
+//         const [salt , storedHash] = user.password.split('.');
+//         const hash = (await scrypt(password , salt , 32)) as Buffer;
+
+//         if(storedHash !== hash.toString('hex')){
+//             throw new BadRequestException('Wrong Password')
+//         }
+//         return user
+//     }
+// }
+
+
+
+
+import * as bcrypt from 'bcrypt';
+import { User } from "./entities/user.entity";
+
+// export function encodePassword(rawPassword: string) {
+//     const SALT = bcrypt.genSaltSync();
+//     return bcrypt.hashSync(rawPassword, SALT)
+// }
+
+
+
 
 @Injectable()
 export class AuthService{
     constructor(private userService: UserService){}
 
-    async signup(email:string , password:string):Promise<CreateUserDto>{
-            const users = await this.userService.find(email);
+    async signup(body:CreateUserDto):Promise<CreateUserDto>{
+            const users = await this.userService.find(body.email);
             if(users.length){
                 throw new BadRequestException('email in use')
             }
 
-            const salt = randomBytes(8).toString('hex');
+            const salt = bcrypt.genSaltSync();
 
-            const hash = (await scrypt(password, salt ,32)) as Buffer;
+            const hash = bcrypt.hashSync(body.password , salt )
 
-            const result = salt + '.' + hash.toString('hex');
+            const result = salt + '.' + hash.toString();
 
-            const user = this.userService.create(email , result);
-            
-            return user;
-    }
+            const user = this.userService.create(body , result);
+
+            return user
+    }       
 }
