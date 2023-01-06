@@ -4,24 +4,24 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @IsString()
-    firstName:string;
+    firstName: string;
 
     @IsNotEmpty()
     @IsString()
-    lastName:string;
+    lastName: string;
 
     @IsNotEmpty()
-    @IsAlphanumeric()
-    userName:string;
+    @IsString()
+    userName: string;
 
     @IsNotEmpty()
     @IsEmail()
-    email:string
+    email: string
 
     @IsNotEmpty()
     @IsString()
     @MinLength(4)
     @MaxLength(20)
-    password:string
+    password: string
 
 }

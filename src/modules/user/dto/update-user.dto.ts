@@ -7,10 +7,10 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     @IsOptional()
     @IsNotEmpty()
     @IsString()
-    firstName:string
+    firstName: string
 
     @IsOptional()
     @IsNotEmpty()
     @IsString()
-    lastName:string
+    lastName: string
 }

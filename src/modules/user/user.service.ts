@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
+import { SigninDto } from './dto/signin.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -9,13 +10,13 @@ import { User } from './entities/user.entity';
 export class UserService {
   constructor(@InjectRepository(User) private repo: Repository<User>) { }
 
-  async create(body:CreateUserDto , password:string):Promise<CreateUserDto> {
-    const user = this.repo.create({...body , password})
-   return this.repo.save(user);
+  async create(body: CreateUserDto, password: string): Promise<CreateUserDto> {
+    const user = this.repo.create({ ...body, password })
+    return this.repo.save(user);
   }
 
-  find(email: string):Promise<CreateUserDto[]>{
-     return this.repo.find()
+  find(email: string) {
+    return this.repo.find(email)
   }
 
   findAll() {
@@ -23,10 +24,20 @@ export class UserService {
   }
 
   findOne(id: number): Promise<CreateUserDto> {
-    if(!id){
+    if (!id) {
       return null;
     }
     return //this.repo.findOne();
+  }
+  findByUserName(userName: string) {
+    if (!userName) {
+      return null;
+    }
+    return this.repo.findOneBy({ userName })
+  }
+
+  findByEmail(email: string) {
+    return this.repo.findOneBy({ email })
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
