@@ -19,7 +19,7 @@ export class UserController {
   }
 
   @Post('/signin')
-  async signinDto(@Body() body: SigninDto): Promise<CreateUserDto> {
+  async signinDto(@Body() body: SigninDto): Promise<{}> {
     const user = await this.authService.signin(body);
     return user;
   }

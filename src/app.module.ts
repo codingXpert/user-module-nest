@@ -5,13 +5,15 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { DatabaseConnectionService } from './database/databse-connection.service';
 import { UserModule } from './modules/user/user.module';
-
+import { JwtModule } from '@nestjs/jwt';
 @Module({
   imports: [
-    ConfigModule.forRoot({isGlobal: true}),
-    TypeOrmModule.forRootAsync({
-      useClass: DatabaseConnectionService
-    }), 
+    ConfigModule.forRoot({ isGlobal: true }),
+    TypeOrmModule.forRootAsync({useClass: DatabaseConnectionService}),
+    JwtModule.register({
+      secret: 'secret',    // this is ok for now , but secret should come from .env
+      signOptions: { expiresIn: '1h' },
+    }),
     UserModule
   ],
   controllers: [AppController],

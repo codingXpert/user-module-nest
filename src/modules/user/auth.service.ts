@@ -3,11 +3,15 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { UserService } from "./user.service";
 import { SigninDto } from "./dto/signin.dto";
 import * as bcrypt from 'bcrypt';
+import { JwtService } from "@nestjs/jwt";
 
 
 @Injectable()
 export class AuthService {
-    constructor(private userService: UserService) { }
+    constructor(
+        private userService: UserService,
+        private jwtService: JwtService
+    ) { }
 
     async signup(body: CreateUserDto) {
         const users = await this.userService.findByEmail(body.email);
@@ -29,18 +33,21 @@ export class AuthService {
         return user
     }
 
-    async signin(body: SigninDto): Promise<CreateUserDto> {
+    async signin(body: SigninDto): Promise<{}> {
         const user = await this.userService.findByUserName(body.userName);
+
         if (!user) {
             throw new NotFoundException('Sorry :) User Not Found')
         }
         const isMatch = await bcrypt.compare(body.password, user.password);
-        console.log(isMatch);
 
         if (!isMatch) {
-            throw new BadRequestException("invalid user name or password")
-        } return user
-
-
+            throw new BadRequestException("invalid user name or password");
+        } else {
+            const payload = { username: user.userName, userId: user.id , email:user.email };
+            return {
+                access_token: this.jwtService.sign(payload),
+            };
+        }
     }
 }
