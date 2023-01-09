@@ -1,17 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, NotFoundException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthService } from './auth.service';
+import { AuthService } from '../auth/auth.service';
 import { SigninDto } from './dto/signin.dto';
-import { User } from './entities/user.entity';
 
 @Controller('user')
 export class UserController {
   constructor(
     private userService: UserService,
-    private authService: AuthService
-  ) { }
+    private authService: AuthService,
+  ) {}
 
   @Post('/signup')
   create(@Body() body: CreateUserDto): Promise<CreateUserDto> {
