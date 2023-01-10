@@ -6,7 +6,6 @@ import { AppService } from './app.service';
 import { DatabaseConnectionService } from './database/databse-connection.service';
 import { UserModule } from './modules/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
-import { jwtConstants } from './modules/auth/auth.constants';
 import { JwtStrategy } from './modules/auth/jwt.strategy';
 import { jwtConfig } from './secretConfig/jwt.config';
 
