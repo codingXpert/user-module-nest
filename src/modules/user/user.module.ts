@@ -6,14 +6,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthService } from '../auth/auth.service'; 
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from '../auth/auth.constants';
+import { jwtConfig } from 'src/secretConfig/jwt.config';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
-    JwtModule.register({
-      secret: jwtConstants.secret,    // this is ok for now , but secret should come from .env
-      signOptions: { expiresIn: '1h' },
-    }),
+    JwtModule.registerAsync(jwtConfig),
   ],
   controllers: [UserController],
   providers: [UserService, AuthService],

@@ -8,15 +8,13 @@ import { UserModule } from './modules/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './modules/auth/auth.constants';
 import { JwtStrategy } from './modules/auth/jwt.strategy';
+import { jwtConfig } from './secretConfig/jwt.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({ useClass: DatabaseConnectionService }),
-    JwtModule.register({
-      secret: jwtConstants.secret,    // this is ok for now , but secret should come from .env
-      signOptions: { expiresIn: '1h' },
-    }),
+    JwtModule.registerAsync(jwtConfig),
     UserModule,
   ],
   controllers: [AppController],
