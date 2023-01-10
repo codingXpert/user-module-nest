@@ -11,7 +11,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthService } from './auth.service'; 
+import { AuthService } from '../auth/auth.service'; 
 import { SigninDto } from './dto/signin.dto';
 
 @Controller('user')
@@ -19,7 +19,7 @@ export class UserController {
   constructor(
     private userService: UserService,
     private authService: AuthService,
-  ) {}
+  ) { }
 
   @Post('/signup')
   create(@Body() body: CreateUserDto): Promise<CreateUserDto> {
