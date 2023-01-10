@@ -7,6 +7,7 @@ import { DatabaseConnectionService } from './database/databse-connection.service
 import { UserModule } from './modules/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './modules/auth/auth.constants';
+import { JwtStrategy } from './modules/auth/jwt.strategy';
 
 @Module({
   imports: [
@@ -19,6 +20,6 @@ import { jwtConstants } from './modules/auth/auth.constants';
     UserModule,
   ],
   controllers: [AppController],
-  providers: [AppService ],
+  providers: [AppService , JwtStrategy],
 })
 export class AppModule { }

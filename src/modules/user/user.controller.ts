@@ -6,13 +6,15 @@ import {
   Patch,
   Param,
   Delete,
-  NotFoundException,
+  UseGuards,
+  Request
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthService } from '../auth/auth.service'; 
 import { SigninDto } from './dto/signin.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
@@ -31,6 +33,14 @@ export class UserController {
     const user = await this.authService.signin(body);
     return user;
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Request() req) {
+    return req.user;
+  }
+
+
   @Get()
   findAll() {
     return this.userService.findAll();
