@@ -12,7 +12,7 @@ import { JwtModule } from '@nestjs/jwt';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({ useClass: DatabaseConnectionService }),
     JwtModule.register({
-      secret: process.env.SECRECT_KEY,    // this is ok for now , but secret should come from .env
+      secret: 'secret',    // this is ok for now , but secret should come from .env
       signOptions: { expiresIn: '1h' },
     }),
     UserModule,
