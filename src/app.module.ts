@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 import { DatabaseConnectionService } from './database/databse-connection.service';
 import { UserModule } from './modules/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
-import { AuthModule } from './modules/auth/auth.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -16,7 +16,6 @@ import { AuthModule } from './modules/auth/auth.module';
       signOptions: { expiresIn: '1h' },
     }),
     UserModule,
-    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService ],
