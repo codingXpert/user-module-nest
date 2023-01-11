@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,6 +10,7 @@ import { UserService } from '../user/user.service';
 import { SigninDto } from '../user/dto/signin.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { ResetPasswordDto } from '../user/dto/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -54,6 +57,29 @@ export class AuthService {
       return {
         access_token: this.jwtService.sign(payload),
       };
+    }
+  }
+
+  //Reset password
+  async resetPassword(userId: number, body: ResetPasswordDto) {
+    const user = await this.userService.findOne(userId);
+
+    if (user) {
+      const isMatch = await bcrypt.compare(body.oldPassword, user.password);
+      
+      if (isMatch) {
+        const salt = await bcrypt.genSaltSync();
+        const hashPassword = await bcrypt.hash(body.newPassword, salt);
+        const updatePassword = await this.userService.updatePassword(userId, hashPassword);
+
+        if (updatePassword) {
+          return true
+        } else {
+          throw new HttpException('Error While resetting password', HttpStatus.BAD_REQUEST)
+        }
+      } else {
+        throw new HttpException('You Entered a wrong password', HttpStatus.BAD_REQUEST)
+      }
     }
   }
 }

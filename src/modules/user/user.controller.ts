@@ -7,14 +7,18 @@ import {
   Param,
   Delete,
   UseGuards,
-  Request
+  Request,
+  Res,
+  HttpStatus
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthService } from '../auth/auth.service'; 
+import { AuthService } from '../auth/auth.service';
 import { SigninDto } from './dto/signin.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { ResetPasswordDto } from './dto/reset-password.dto';
+import express, { Response} from 'express';
 
 @Controller('user')
 export class UserController {
@@ -38,6 +42,23 @@ export class UserController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+
+  @UseGuards(JwtAuthGuard)
+  @Post('reset')
+  async reset(
+    @Request() req,   // access to the current logedIn token
+    @Res() res: Response,
+    @Body() resetPasswordDto: ResetPasswordDto
+  ) {
+    const data = await this.authService.resetPassword(req.user.userId, resetPasswordDto)
+    
+    res.status(HttpStatus.OK).send({
+      success: HttpStatus.OK,
+      data,
+      message: "Password reset successfully",
+    });
   }
 
 

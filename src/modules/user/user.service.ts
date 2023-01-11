@@ -27,7 +27,7 @@ export class UserService {
     if (!id) {
       return null;
     }
-    return //this.repo.findOne();
+    return this.repo.findOneBy({id});
   }
   findByUserName(userName: string) {
     if (!userName) {
@@ -42,6 +42,14 @@ export class UserService {
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
+  }
+
+  async updatePassword(id:number , data:any){
+     return this.repo.createQueryBuilder()
+     .update(User)
+     .set({password:data})
+     .where("id = :id", { id: id })
+     .execute();
   }
 
   remove(id: number) {
