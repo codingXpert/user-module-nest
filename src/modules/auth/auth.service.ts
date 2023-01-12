@@ -11,9 +11,13 @@ import { SigninDto } from '../user/dto/signin.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ChangePasswordDto } from '../user/dto/change-password.dto';
+import { ForgetPasswordDto } from '../user/dto/forget-password.dto';
+import appConfig from 'src/secretConfig/app.config';
+
 
 @Injectable()
 export class AuthService {
+  jwt = require('jsonwebtoken')
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
@@ -66,7 +70,7 @@ export class AuthService {
 
     if (user) {
       const isMatch = await bcrypt.compare(body.oldPassword, user.password);
-      
+
       if (isMatch) {
         const salt = await bcrypt.genSaltSync();
         const hashPassword = await bcrypt.hash(body.newPassword, salt);
@@ -81,5 +85,27 @@ export class AuthService {
         throw new HttpException('You Entered a wrong password', HttpStatus.BAD_REQUEST)
       }
     }
+  }
+
+  // Forget Password
+  async forgetPassword(body: ForgetPasswordDto) {
+    const user = await this.userService.findByEmail(body.email);
+    if (!user) {
+      throw new NotFoundException('User Not Registred');
+      return;
+    }
+    const secret = appConfig().appSecret + user.password;
+    const payload = {
+      id:user.id,
+      email:user.email
+    }
+    const token = this.jwt.sign(payload , secret ,{expiresIn:'10m'})
+    const link = `http://localhost:3000/resetPassword/${user.id}/${token}`;
+    console.log(link);
+    // console.log(token);
+    return;
+    
+    
+    
   }
 }
