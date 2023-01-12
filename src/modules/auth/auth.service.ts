@@ -10,7 +10,7 @@ import { UserService } from '../user/user.service';
 import { SigninDto } from '../user/dto/signin.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { ResetPasswordDto } from '../user/dto/reset-password.dto';
+import { ChangePasswordDto } from '../user/dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -60,8 +60,8 @@ export class AuthService {
     }
   }
 
-  //Reset password
-  async resetPassword(userId: number, body: ResetPasswordDto) {
+  //Change password after signin
+  async changePassword(userId: number, body: ChangePasswordDto) {
     const user = await this.userService.findOne(userId);
 
     if (user) {
