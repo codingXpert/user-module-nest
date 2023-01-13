@@ -7,7 +7,8 @@ import {
     Body,
     HttpStatus,
     Res,
-    UnauthorizedException
+    UnauthorizedException,
+    BadRequestException
 } from "@nestjs/common";
 import { ChangePasswordDto } from "../user/dto/change-password.dto";
 import { AuthService } from "./auth.service";
@@ -70,19 +71,19 @@ export class AuthController {
 
         const { id, token } = req.params;
         const user = await this.userService.findOne(+id)
-        if(id === user.id){
-            const secret = appConfig().appSecret + user.password;
+        const secret = appConfig().appSecret + user.password;
 
-            try {
-                const payload = this.jwt.verify(token, secret);
-                if (payload)
-                    res.send(await this.authService.setPassword(body));
-            } catch (err) {
-                console.log(err.message);
-                res.send(err);
+        try {
+            const payload = this.jwt.verify(token, secret);
+            if (id == payload.id) {
+                res.send(await this.authService.setPassword(body));
+            } else {
+                throw new BadRequestException("Invalid User")
             }
-        } else {
-            throw new UnauthorizedException('Invalid User')
+        } catch (err) {
+            console.log(err.message);
+
+            res.send(err);
         }
     }
 }
