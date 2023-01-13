@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
   NotFoundException,
+  Res,
 } from '@nestjs/common';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { UserService } from '../user/user.service';
@@ -13,6 +14,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ChangePasswordDto } from '../user/dto/change-password.dto';
 import { ForgetPasswordDto } from '../user/dto/forget-password.dto';
 import appConfig from 'src/secretConfig/app.config';
+import { ResetPasswordDto } from '../user/dto/reset-password.dto';
 
 
 @Injectable()
@@ -23,6 +25,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) { }
 
+  // Sign-Up
   async signup(body: CreateUserDto) {
     const users = await this.userService.findByEmail(body.email);
     const userName = await this.userService.findByUserName(body.userName);
@@ -43,6 +46,7 @@ export class AuthService {
     return user;
   }
 
+  // Sign-In
   async signin(body: SigninDto): Promise<{}> {
     const user = await this.userService.findByUserName(body.userName);
 
@@ -65,7 +69,7 @@ export class AuthService {
   }
 
   //Change password after signin
-  async changePassword(userId: number, body: ChangePasswordDto) {
+  async changePassword(userId: number, body: ChangePasswordDto):Promise<Boolean> {
     const user = await this.userService.findOne(userId);
 
     if (user) {
@@ -74,7 +78,7 @@ export class AuthService {
       if (isMatch) {
         const salt = await bcrypt.genSaltSync();
         const hashPassword = await bcrypt.hash(body.newPassword, salt);
-        const updatePassword = await this.userService.updatePassword(userId, hashPassword);
+        const updatePassword = await this.userService.updatePassword(hashPassword);
 
         if (updatePassword) {
           return true
@@ -88,24 +92,37 @@ export class AuthService {
   }
 
   // Forget Password
-  async forgetPassword(body: ForgetPasswordDto) {
+  async forgetPassword(body: ForgetPasswordDto):Promise<CreateUserDto> {
     const user = await this.userService.findByEmail(body.email);
     if (!user) {
       throw new NotFoundException('User Not Registred');
-      return;
     }
     const secret = appConfig().appSecret + user.password;
     const payload = {
-      id:user.id,
-      email:user.email
+      id: user.id,
+      email: user.email
     }
-    const token = this.jwt.sign(payload , secret ,{expiresIn:'10m'})
-    const link = `http://localhost:3000/resetPassword/${user.id}/${token}`;
+    const token = this.jwt.sign(payload, secret, { expiresIn: '1d' })
+    const link = `http://localhost:3000/auth/resetPassword/${user.id}/${token}`;
     console.log(link);
     // console.log(token);
-    return;
-    
-    
-    
+    return user;
+  }
+//reset forget password
+  async setPassword(body: ResetPasswordDto):Promise<string> {
+    if (body.password === body.conformPassword) {
+      const salt = await bcrypt.genSaltSync();
+      const hashPassword = await bcrypt.hash(body.password, salt);
+      const updatePassword = await this.userService.updatePassword(hashPassword);
+
+      if (updatePassword) {
+        return 'Password Updated Successfully!!'
+      } else {
+        throw new HttpException('Error While Updating Password', HttpStatus.BAD_REQUEST)
+      }
+    } else {
+      throw new HttpException('Password Not Matched', HttpStatus.BAD_REQUEST)
+    }
   }
 }
+

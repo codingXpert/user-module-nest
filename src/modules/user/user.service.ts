@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { SigninDto } from './dto/signin.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
 
@@ -44,11 +43,11 @@ export class UserService {
     return `This action updates a #${id} user`;
   }
 
-  async updatePassword(id:number , data:any){
+  async updatePassword(data:any){
      return this.repo.createQueryBuilder()
      .update(User)
      .set({password:data})
-     .where("id = :id", { id: id })
+    //  .where("id = :id", { id: id })
      .execute();
   }
 

@@ -6,7 +6,8 @@ import {
     Post,
     Body,
     HttpStatus,
-    Res
+    Res,
+    UnauthorizedException
 } from "@nestjs/common";
 import { ChangePasswordDto } from "../user/dto/change-password.dto";
 import { AuthService } from "./auth.service";
@@ -39,7 +40,7 @@ export class AuthController {
         @Request() req,   // access to the current logedIn token
         @Res() res: Response,
         @Body() changePasswordDto: ChangePasswordDto
-    ) {
+    ): Promise<void> {
         const data = await this.authService.changePassword(req.user.userId, changePasswordDto)
 
         res.status(HttpStatus.OK).send({
@@ -51,40 +52,37 @@ export class AuthController {
 
     // Forget Password
     @Post('/forget')
-    async forgetPassword(@Res() res: Response, @Body() body: ForgetPasswordDto) {
+    async forgetPassword(@Res() res: Response,
+        @Body() body: ForgetPasswordDto
+    ): Promise<void> {
         const user = await this.authService.forgetPassword(body);
         res.status(HttpStatus.OK).send({
             success: HttpStatus.OK,
-            user,
-            message: "Link sent to your email ",
+            // user,
+            message: `Password Reset Link Has Been Sent To Your Email:- ${user.email} `,
         });
     }
 
-    @Get('/resetPassword/:id/:token')
-    async resetPassword(@Request() req , @Res() res: Response) {
+    @Post('/resetPassword/:id/:token')
+    async resetPassword(@Request() req,
+        @Res() res: Response,
+        @Body() body: ResetPasswordDto) {
+
         const { id, token } = req.params;
-        
         const user = await this.userService.findOne(+id)
         if (user.userName) {
             const secret = appConfig().appSecret + user.password;
 
             try {
-                const payload = this.jwt.verify(token , secret);
-                // const setPassword = this.authService.resetPassword()
+                const payload = this.jwt.verify(token, secret);
+                if (payload)
+                    res.send(await this.authService.setPassword(body));
             } catch (err) {
-                 console.log(err.message);
-                 res.send(err);     
+                console.log(err.message);
+                res.send(err);
             }
-
+        } else {
+            throw new UnauthorizedException('Invalid User')
         }
-    }
-
-    @Post('/resetPassword/:id/:token')
-    async set(@Request() req , @Body() body:ResetPasswordDto){
-       const{id , token} = req.params;
-       const user = await this.userService.findOne(id);
-       if(!user.userName){
-        
-       }  
     }
 }
