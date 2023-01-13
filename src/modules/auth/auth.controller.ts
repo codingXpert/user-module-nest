@@ -70,7 +70,7 @@ export class AuthController {
 
         const { id, token } = req.params;
         const user = await this.userService.findOne(+id)
-        if (user.userName) {
+        if(id === user.id){
             const secret = appConfig().appSecret + user.password;
 
             try {
