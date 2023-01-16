@@ -1,10 +1,12 @@
-import { IsAlphanumeric, IsEmail, IsNotEmpty, IsNumber, isNumber, IsString, MaxLength, MinLength } from "class-validator";
+import {
+    IsEmail, 
+    IsNotEmpty, 
+    IsString, 
+    Matches, 
+} from "class-validator";
+import { MESSAGES, REGEX  } from "src/password-utils";
 
 export class CreateUserDto {
-
-    // @IsNotEmpty()
-    @IsNumber()
-    id:number
 
     @IsNotEmpty()
     @IsString()
@@ -24,8 +26,6 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @IsString()
-    @MinLength(4)
-    @MaxLength(20)
+    @Matches(REGEX.PASSWORD_RULE, { message: MESSAGES.PASSWORD_RULE_MESSAGE })
     password: string
-
 }
