@@ -15,6 +15,7 @@ import { ChangePasswordDto } from '../user/dto/change-password.dto';
 import { ForgetPasswordDto } from '../user/dto/forget-password.dto';
 import appConfig from 'src/secretConfig/app.config';
 import { ResetPasswordDto } from '../user/dto/reset-password.dto';
+import { MailerService } from '@nestjs-modules/mailer';
 
 
 @Injectable()
@@ -23,6 +24,7 @@ export class AuthService {
   constructor(
     private userService: UserService,
     private jwtService: JwtService,
+    private mailerService: MailerService
   ) { }
 
   // Sign-Up
@@ -104,8 +106,13 @@ export class AuthService {
     }
     const token = this.jwt.sign(payload, secret, { expiresIn: '1d' })
     const link = `http://localhost:3000/auth/resetPassword/${user.id}/${token}`;
+    // sending mail to the user
+    await this.mailerService.sendMail({
+      to:user.email,
+      subject:'Password Reset Link',
+      html:`Click <a href = "${link}"> here </a> reset your password`
+  })
     console.log(link);
-    // console.log(token);
     return user;
   }
 //reset forget password
