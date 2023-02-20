@@ -9,13 +9,13 @@ import { User } from './entities/user.entity';
 export class UserService {
   constructor(@InjectRepository(User) private repo: Repository<User>) { }
 
-  async create(body:CreateUserDto , password:string):Promise<CreateUserDto> {
-    const user = this.repo.create({...body , password})
-   return this.repo.save(user);
+  async create(body: CreateUserDto, password: string): Promise<CreateUserDto> {
+    const user = this.repo.create({ ...body, password })
+    return this.repo.save(user);
   }
 
-  find(email: string):Promise<CreateUserDto[]>{
-     return this.repo.find()
+  find(email: string) {
+    return this.repo.find(email)
   }
 
   findAll() {
@@ -23,14 +23,32 @@ export class UserService {
   }
 
   findOne(id: number): Promise<CreateUserDto> {
-    if(!id){
+    if (!id) {
       return null;
     }
-    return //this.repo.findOne();
+    return this.repo.findOneBy({id});
+  }
+  findByUserName(userName: string) {
+    if (!userName) {
+      return null;
+    }
+    return this.repo.findOneBy({ userName })
+  }
+
+  findByEmail(email: string) {
+    return this.repo.findOneBy({ email })
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
+  }
+
+  async updatePassword(data:any){
+     return this.repo.createQueryBuilder()
+     .update(User)
+     .set({password:data})
+    //  .where("id = :id", { id: id })
+     .execute();
   }
 
   remove(id: number) {

@@ -1,8 +1,7 @@
 import { IsAlphanumeric, IsNotEmpty, IsString } from "class-validator";
 
-export class SigninDto{
-    
-    @IsAlphanumeric()
+export class SigninDto {
+    @IsString()
     @IsNotEmpty()
     userName: string
 
