@@ -14,7 +14,7 @@ export class UserService {
     return this.repo.save(user);
   }
 
-  find(email: string) {
+  find(email) {
     return this.repo.find(email)
   }
 
