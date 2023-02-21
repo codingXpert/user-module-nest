@@ -104,13 +104,15 @@ export class AuthService {
       id: user.id,
       email: user.email
     }
-    const token = this.jwt.sign(payload, secret, { expiresIn: '1d' })
+    const token = this.jwt.sign(payload, secret, { expiresIn: '10m' })
     const link = `http://localhost:3000/auth/resetPassword/${user.id}/${token}`;
     // sending mail to the user
     await this.mailerService.sendMail({
       to:user.email,
+      from: process.env.FROM,
       subject:'Password Reset Link',
-      html:`Click <a href = "${link}"> here </a> reset your password`
+      text:'This link is valid for 10 min',
+      html:`Click <a href = "${link}"> here </a> to reset your password`
   })
     console.log(link);
     return user;

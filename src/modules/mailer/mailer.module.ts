@@ -1,19 +1,21 @@
 import { Module } from "@nestjs/common";
 import { MailerModule } from "@nestjs-modules/mailer";
 
+require('dotenv').config();
+// import * as dotenv from 'dotenv' 
+// dotenv.config()
+
 @Module({
-    imports:[
+    imports: [
         MailerModule.forRoot({
-            transport:{
-                host:'0.0.0.0',
-                port:'1025'
-            },
-            defaults:{
-                from:'admin@gmail.com'
+            transport: {
+                host: process.env.TRANSPORT_HOST,
+                auth :{
+                    user: process.env.API_USER,
+                    pass: process.env.API_PASS
+                }
             }
         })
-    ],
-    controllers:[],
-    providers:[]
+    ]
 })
 export class Mailer{}
